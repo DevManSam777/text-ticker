@@ -52,7 +52,7 @@ If your text contains quotes (`"`) or apostrophes (`'`), you MUST:
 <!-- ❌ BROKEN - Browser stops reading at first apostrophe -->
 <text-ticker items='["It's broken", "Don't work"]'></text-ticker>
 
-<!-- ❌ BROKEN - Unescaped quotes cause JSON errors -->
+<!-- ❌ BROKEN - Will cause JSON errors -->
 <text-ticker items='["He said "Hello"", "Weather"]'></text-ticker>
 ```
 
