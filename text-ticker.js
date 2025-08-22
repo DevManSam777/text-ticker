@@ -1,7 +1,7 @@
 class TextTickerElement extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'closed' });
+    this.attachShadow({ mode: 'open' });
     this.items = [];
     this.animationId = null;
     this.resizeObserver = null;
@@ -63,7 +63,7 @@ class TextTickerElement extends HTMLElement {
         this.updateContent();
       } else {
         this.updateStyles();
-        if (['font-family', 'font-weight', 'font-size', 'separator'].includes(name)) {
+        if (['font-family', 'font-weight', 'font-size', 'separator', 'separator-color'].includes(name)) {
           this.updateTickerContent();
         }
       }
@@ -117,7 +117,7 @@ class TextTickerElement extends HTMLElement {
 
   showMessage(message, color) {
     color = color || '#dc3545';
-    const ticker = this.shadowRoot.querySelector('.ticker-content');
+    const ticker = this.shadowRoot?.querySelector('.ticker-content');
     if (ticker) {
       ticker.textContent = message;
       ticker.style.color = color;
@@ -129,10 +129,12 @@ class TextTickerElement extends HTMLElement {
 
   updateTickerContent() {
     const separator = this.getAttribute('separator') || '|';
-    const tickerContent = this.shadowRoot.querySelector('.ticker-content');
+    const tickerContent = this.shadowRoot?.querySelector('.ticker-content');
 
     if (!tickerContent || this.items.length === 0) {
-      this.showMessage('No items to display');
+      if (tickerContent) {
+        this.showMessage('No items to display');
+      }
       return;
     }
 
@@ -262,6 +264,8 @@ class TextTickerElement extends HTMLElement {
   }
 
   updateStyles() {
+    if (!this.shadowRoot) return;
+    
     const style = this.shadowRoot.querySelector('style');
     if (style) {
       style.textContent = this.getStyles();
@@ -270,7 +274,8 @@ class TextTickerElement extends HTMLElement {
 
   getStyles() {
     const textColor = this.getAttribute('text-color') || '#333';
-    const separatorColor = this.getAttribute('separator-color') || textColor;
+    const separatorColorAttr = this.getAttribute('separator-color');
+    const separatorColor = separatorColorAttr || textColor;
     const backgroundColor = this.getAttribute('background-color') || '#f8f9fa';
     const googleFont = this.getAttribute('google-font');
     const fontFamily = this.getAttribute('font-family') || 'Arial, sans-serif';
@@ -279,10 +284,15 @@ class TextTickerElement extends HTMLElement {
 
     const finalFontFamily = googleFont ? '"' + googleFont + '", ' + fontFamily : fontFamily;
 
-    return ':host { display: block; width: 100%; overflow: hidden; background-color: ' + backgroundColor + '; padding: 12px 0; box-sizing: border-box; } .ticker-container { white-space: nowrap; overflow: hidden; position: relative; min-height: 1.6em; height: auto; display: flex; align-items: center; } .ticker-content { display: inline-block; font-family: ' + finalFontFamily + '; font-weight: ' + fontWeight + '; font-size: ' + fontSize + '; line-height: 1.4; color: ' + textColor + '; will-change: transform; white-space: nowrap; transform: translateX(0); } .ticker-container:hover .ticker-content { animation-play-state: paused !important; } .ticker-item { color: ' + textColor + '; padding: 0 5px; transition: all 0.2s ease; } .ticker-item:hover { filter: brightness(1.1); background-color: rgba(0, 0, 0, 0.05); } .ticker-link { text-decoration: none; color: inherit; cursor: pointer; } .ticker-link:hover { filter: brightness(1.2); background-color: rgba(0, 0, 0, 0.1); text-decoration: underline; } .separator { color: ' + separatorColor + '; opacity: 0.7; font-weight: bold; margin: 0 2em; } @media (max-width: 768px) { :host { padding: 8px 0; } .ticker-content { font-size: calc(' + fontSize.replace('px', '') + ' * 0.9px); } .separator { margin: 0 1.5em; } } @media (prefers-reduced-motion: reduce) { .ticker-content { animation: none !important; transform: translateX(0) !important; } }';
+    // Only apply opacity if no custom separator color is set
+    const separatorOpacity = separatorColorAttr ? '1' : '0.7';
+
+    return ':host { display: block; width: 100%; overflow: hidden; background-color: ' + backgroundColor + '; padding: 12px 0; box-sizing: border-box; } .ticker-container { white-space: nowrap; overflow: hidden; position: relative; min-height: 1.6em; height: auto; display: flex; align-items: center; } .ticker-content { display: inline-block; font-family: ' + finalFontFamily + '; font-weight: ' + fontWeight + '; font-size: ' + fontSize + '; line-height: 1.4; color: ' + textColor + '; will-change: transform; white-space: nowrap; transform: translateX(0); } .ticker-container:hover .ticker-content { animation-play-state: paused !important; } .ticker-item { color: ' + textColor + '; padding: 0 5px; transition: all 0.2s ease; } .ticker-item:hover { filter: brightness(1.1); background-color: rgba(0, 0, 0, 0.05); } .ticker-link { text-decoration: none; color: inherit; cursor: pointer; } .ticker-link:hover { filter: brightness(1.2); background-color: rgba(0, 0, 0, 0.1); text-decoration: underline; } .separator { color: ' + separatorColor + '; opacity: ' + separatorOpacity + '; font-weight: bold; margin: 0 2em; } @media (max-width: 768px) { :host { padding: 8px 0; } .ticker-content { font-size: calc(' + fontSize.replace('px', '') + ' * 0.9px); } .separator { margin: 0 1.5em; } } @media (prefers-reduced-motion: reduce) { .ticker-content { animation: none !important; transform: translateX(0) !important; } }';
   }
 
   render() {
+    if (!this.shadowRoot) return;
+    
     this.shadowRoot.innerHTML = '<style>' + this.getStyles() + '</style><div class="ticker-container"><div class="ticker-content">Loading...</div></div>';
   }
 }
