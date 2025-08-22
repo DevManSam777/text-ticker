@@ -1,7 +1,7 @@
 class TextTickerElement extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'closed' });
     this.items = [];
     this.animationId = null;
     this.resizeObserver = null;
