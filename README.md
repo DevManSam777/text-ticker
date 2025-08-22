@@ -9,7 +9,7 @@ A scrolling text ticker web component with clickable links, Google Fonts support
 Add the script to your HTML:
 
 ```html
-<script src="text-ticker.js"></script>
+<script src="https://raw.githack.com/DevManSam777/text-ticker/main/text-ticker.js"></script>
 ```
 
 ## Basic Usage
