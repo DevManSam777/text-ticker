@@ -2,6 +2,8 @@
 
 A scrolling text ticker web component with clickable links, Google Fonts support, and customizable styling including separator color control.
 
+![Ticker gif](./ticker.gif)
+
 ## Installation
 
 Add the script to your HTML:
